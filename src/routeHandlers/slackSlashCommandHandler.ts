@@ -6,7 +6,7 @@ import type { Env } from "../types";
 
 export const ACTION_ID = "action-user-selection";
 
-export async function slashCommand(c: Context) {
+export async function slackSlashCommandHandler(c: Context) {
   const { SLACK_BOT_TOKEN } = env<Env>(c);
   const slackClient = new SlackAPIClient(SLACK_BOT_TOKEN);
 

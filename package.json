@@ -2,7 +2,11 @@
   "name": "honc-honc",
   "scripts": {
     "dev": "wrangler dev src/index.ts",
-    "deploy": "wrangler deploy --minify src/index.ts"
+    "deploy": "wrangler deploy --minify src/index.ts",
+    "studio": "bunx @fiberplane/studio@beta",
+    "lint": "biome lint",
+    "format": "biome format --write",
+    "type-check": "tsc"
   },
   "dependencies": {
     "@fiberplane/hono": "beta",
