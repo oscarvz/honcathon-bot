@@ -1,15 +1,18 @@
 import type { Context } from "hono";
+import { env } from "hono/adapter";
 import {
   type BlockAction,
   type RadioButtonsAction,
-  SlackAPIClient,
+  SlackApp,
   type UsersSelectAction,
 } from "slack-edge";
 
+import type { EnvVars } from "../types";
 import { ACTION_ID } from "./slackSlashCommandHandler";
 
 export async function slackEventsHandler(c: Context) {
-  const slackClient = new SlackAPIClient(c.env.SLACK_BOT_TOKEN);
+  const slackEnv = env<EnvVars>(c);
+  const slackClient = new SlackApp({ env: slackEnv });
   const requestBody: Record<"payload", string> = await c.req.parseBody();
   const payload: BlockAction<UsersSelectAction | RadioButtonsAction> =
     JSON.parse(requestBody.payload);
