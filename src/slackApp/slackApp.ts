@@ -1,19 +1,15 @@
-import {
-  SlackApp,
-  type SlackEdgeAppEnv,
-  type UsersSelectAction,
-} from "slack-edge";
+import { neon } from "@neondatabase/serverless";
+import { eq } from "drizzle-orm";
+import { drizzle } from "drizzle-orm/neon-http";
+import { SlackApp, type UsersSelectAction } from "slack-edge";
 
+import { scoresTable, usersTable } from "@/schema";
+import type { EnvVars } from "@/types";
 import {
   ACTION_ID_RATE_USER,
   ACTION_ID_SELECT_USER,
   VIEW_CALLBACK_ID,
 } from "./constants";
-import type { EnvVars } from "@/types";
-import { neon } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
-import { InsertScore, scoresTable, usersTable } from "@/schema";
-import { eq } from "drizzle-orm";
 
 export function getSlackApp(env: EnvVars) {
   const slackApp = new SlackApp({ env });
