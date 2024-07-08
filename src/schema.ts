@@ -1,13 +1,13 @@
 import { integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 
 export const usersTable = pgTable("users_table", {
-  id: text("id").notNull().unique(),
+  id: text("id").primaryKey(),
   name: text("name").notNull(),
 });
 
 export const scoresTable = pgTable("scores_table", {
   id: serial("id").primaryKey(),
-  userId: text("id")
+  userId: text("user_id")
     .notNull()
     .references(() => usersTable.id, { onDelete: "cascade" }),
   ratedById: text("rated_by_id").notNull(),

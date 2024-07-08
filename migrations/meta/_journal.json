@@ -5,36 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1720375801039,
-      "tag": "0000_absent_cloak",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1720378220031,
-      "tag": "0001_nice_nextwave",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1720441752811,
-      "tag": "0002_bumpy_wild_child",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1720450407663,
-      "tag": "0003_harsh_expediter",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1720469392391,
-      "tag": "0004_eminent_shaman",
+      "when": 1720471764614,
+      "tag": "0000_complete_dagger",
       "breakpoints": true
     }
   ]
