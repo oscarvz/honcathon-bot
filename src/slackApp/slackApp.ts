@@ -3,10 +3,11 @@ import {
   type SlackEdgeAppEnv,
   type UsersSelectAction,
 } from "slack-edge";
+
 import { ACTION_ID_RATE_USER, ACTION_ID_SELECT_USER } from "./constants";
 
 export function getSlackApp(env: SlackEdgeAppEnv) {
-  const slackApp = new SlackApp({ env: env as SlackEdgeAppEnv });
+  const slackApp = new SlackApp({ env });
 
   slackApp.command("/nagbot", async ({ context: { client, triggerId } }) => {
     if (!triggerId) {
@@ -45,9 +46,11 @@ export function getSlackApp(env: SlackEdgeAppEnv) {
     async ({ context: { client }, payload: { actions, container } }) => {
       const viewId = container.view_id;
       const action = actions.find(
-        (a): a is UsersSelectAction =>
-          a.type === "users_select" && a.action_id === ACTION_ID_SELECT_USER,
+        (action): action is UsersSelectAction =>
+          action.type === "users_select" &&
+          action.action_id === ACTION_ID_SELECT_USER,
       );
+
       if (!action || !viewId) {
         return;
       }
