@@ -2,10 +2,11 @@ import { createHonoMiddleware } from "@fiberplane/hono";
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
 import { type Env, Hono } from "hono";
-import { SlackApp, type SlackEdgeAppEnv } from "slack-edge";
+import type { SlackEdgeAppEnv } from "slack-edge";
 
 import { usersTable } from "./schema";
 import type { EnvVars } from "./types";
+import { getSlackApp } from "./routeHandlers/slackApp";
 
 const honoApp = new Hono<{ Bindings: EnvVars }>();
 
@@ -32,54 +33,12 @@ export default {
     env: Env | SlackEdgeAppEnv,
     ctx: ExecutionContext,
   ): Promise<Response> {
-    const isSlackRequest = request.headers
+    const isSlackBotRequest = request.headers
       .get("user-agent")
       ?.includes("Slackbot");
 
-    if (isSlackRequest) {
-      const slackApp = new SlackApp({
-        env: env as SlackEdgeAppEnv,
-        socketMode: true,
-      });
-
-      slackApp.command(
-        "/nagbot",
-        async ({ context: { client, triggerId } }) => {
-          if (!triggerId) {
-            return "No trigger ID found";
-          }
-
-          await client.views.open({
-            trigger_id: triggerId,
-            view: {
-              type: "modal",
-              title: { type: "plain_text", text: "HONCATHON point system" },
-              blocks: [
-                {
-                  type: "section",
-                  text: {
-                    type: "mrkdwn",
-                    text: "Pick a colleague from from the dropdown list",
-                  },
-                  accessory: {
-                    type: "users_select",
-                    placeholder: {
-                      type: "plain_text",
-                      text: "Select an item",
-                    },
-                    action_id: "user-selection-id",
-                  },
-                },
-              ],
-            },
-          });
-        },
-      );
-
-      slackApp.action("user-selection-id", async ({ context }) => {
-        console.log("hello", context);
-      });
-
+    if (isSlackBotRequest) {
+      const slackApp = getSlackApp(env as SlackEdgeAppEnv);
       return await slackApp.run(request, ctx);
     }
 
