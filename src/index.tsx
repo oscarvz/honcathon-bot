@@ -28,7 +28,7 @@ honoApp.get("/", async (c) => {
 export default {
   async fetch(
     request: Request,
-    env: Env | SlackEdgeAppEnv,
+    env: EnvVars,
     ctx: ExecutionContext,
   ): Promise<Response> {
     const isSlackBotRequest = request.headers
@@ -36,7 +36,7 @@ export default {
       ?.includes("Slackbot");
 
     if (isSlackBotRequest) {
-      const slackApp = getSlackApp(env as SlackEdgeAppEnv);
+      const slackApp = getSlackApp(env);
       return await slackApp.run(request, ctx);
     }
 

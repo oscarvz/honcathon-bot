@@ -1,0 +1,1 @@
+ALTER TABLE "users_table" ADD CONSTRAINT "users_table_slack_id_unique" UNIQUE("slack_id");
