@@ -37,9 +37,9 @@ export default {
 
     if (isSlackBotRequest) {
       const slackApp = getSlackApp(env as SlackEdgeAppEnv);
-      return slackApp.run(request, ctx);
+      return await slackApp.run(request, ctx);
     }
 
-    return honoApp.fetch(request, env, ctx);
+    return await honoApp.fetch(request, env, ctx);
   },
 };
