@@ -160,38 +160,28 @@ export function getSlackApp(env: EnvVars) {
       const db = drizzle(sql);
 
       // Add both the current user & user that's being rated to the database
-      for (const slackUserId of [user.id, targetUserId]) {
-        const slackUser = await context.client.users.info({
-          user: slackUserId,
-        });
-        if (
-          !slackUser.user ||
-          !slackUser.user.real_name ||
-          !slackUser.user.id
-        ) {
-          continue;
-        }
-
-        await db
-          .insert(usersTable)
-          .values({
-            name: slackUser.user.real_name,
-            slackId: slackUser.user.id,
-          })
-          .onConflictDoNothing({ target: usersTable.slackId });
+      const targetSlackUser = await context.client.users.info({
+        user: targetUserId,
+      });
+      // TODO: Add error handling
+      if (!targetSlackUser.user?.real_name) {
+        return;
       }
 
-      // Then we can add the rating to the database
-      const [storedUser] = await db
-        .selectDistinct({ id: usersTable.id })
-        .from(usersTable)
-        .where(eq(usersTable.slackId, targetUserId));
+      // Add the user that's being rated to the database
+      await db
+        .insert(usersTable)
+        .values({
+          id: targetUserId,
+          name: targetSlackUser.user.real_name,
+        })
+        .onConflictDoNothing({ target: usersTable.id });
 
+      // Then we can add the rating to the database
       await db.insert(scoresTable).values({
-        ratedBySlackUserId: user.id,
+        userId: targetUserId,
+        ratedById: user.id,
         score,
-        slackUserId: targetUserId,
-        userId: storedUser.id,
       });
     },
   );

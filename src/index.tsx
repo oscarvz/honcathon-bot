@@ -1,6 +1,5 @@
 import { createHonoMiddleware } from "@fiberplane/hono";
-import { type Env, Hono } from "hono";
-import type { SlackEdgeAppEnv } from "slack-edge";
+import { Hono } from "hono";
 
 import { getDb } from "@/db";
 import { usersTable } from "@/schema";
