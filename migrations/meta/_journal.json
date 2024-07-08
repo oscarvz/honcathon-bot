@@ -29,6 +29,13 @@
       "when": 1720450407663,
       "tag": "0003_harsh_expediter",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1720469392391,
+      "tag": "0004_eminent_shaman",
+      "breakpoints": true
     }
   ]
 }
