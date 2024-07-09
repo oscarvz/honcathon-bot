@@ -11,7 +11,7 @@ const honoApp = new Hono<{ Bindings: EnvVars }>();
 honoApp.use(createHonoMiddleware(honoApp));
 
 honoApp.get("/", async (c) => {
-  const db = getDb(c);
+  const db = getDb(c.env.DATABASE_URL);
   const users = await db.select().from(usersTable);
 
   return c.html(
