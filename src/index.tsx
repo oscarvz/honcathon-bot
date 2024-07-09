@@ -25,15 +25,8 @@ honoApp.get("/", async (c) => {
 });
 
 export default {
-  async fetch(
-    request: Request,
-    env: EnvVars,
-    ctx: ExecutionContext,
-  ): Promise<Response> {
-    const isSlackBotRequest = request.headers
-      .get("user-agent")
-      ?.includes("Slackbot");
-
+  fetch: async (request: Request, env: EnvVars, ctx: ExecutionContext) => {
+    const isSlackBotRequest = request.headers.has("x-slack-signature");
     if (isSlackBotRequest) {
       const slackApp = getSlackApp(env);
       return await slackApp.run(request, ctx);
