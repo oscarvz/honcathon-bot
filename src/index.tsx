@@ -16,7 +16,7 @@ honoApp.get("/", async (c) => {
 
   return c.html(
     <div>
-      <h1>Hello, World!</h1>
+      <h1>Hello Honc!</h1>
       {users.map((user) => (
         <div key={user.id}>{user.name}</div>
       ))}

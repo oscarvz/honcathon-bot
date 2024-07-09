@@ -1,9 +1,8 @@
 import type { SlashCommandAckHandler } from "slack-edge";
 
-import type { EnvVars } from "@/types";
 import { ACTION_ID_SELECT_USER, VIEW_CALLBACK_ID } from "../constants";
 
-export const slashCommandHandler: SlashCommandAckHandler<EnvVars> = async ({
+export const slashCommandHandler: SlashCommandAckHandler = async ({
   context: { client, triggerId },
 }) => {
   if (!triggerId) {

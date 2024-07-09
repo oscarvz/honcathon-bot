@@ -1,17 +1,12 @@
 import type { BlockActionAckHandler, UsersSelectAction } from "slack-edge";
 
-import type { EnvVars } from "@/types";
 import {
   ACTION_ID_RATE_USER,
   ACTION_ID_SELECT_USER,
   VIEW_CALLBACK_ID,
 } from "../constants";
 
-export const actionHandler: BlockActionAckHandler<
-  "users_select",
-  EnvVars
-> = async ({
-  env,
+export const actionHandler: BlockActionAckHandler<"users_select"> = async ({
   context: { client, userId },
   payload: { actions, container },
 }) => {
