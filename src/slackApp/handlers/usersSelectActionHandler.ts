@@ -1,6 +1,5 @@
 import type { BlockActionAckHandler, StaticSelectAction } from "slack-edge";
 
-import { getDb } from "@/db";
 import type { EnvVars } from "@/types";
 import {
   ACTION_ID_RATE_USER,
@@ -12,7 +11,6 @@ type Handler = BlockActionAckHandler<"static_select", EnvVars>;
 
 export const usersSelectActionHandler: Handler = async ({
   context: { client, userId },
-  env,
   payload: { actions, container },
 }) => {
   const viewId = container.view_id;
@@ -24,12 +22,6 @@ export const usersSelectActionHandler: Handler = async ({
   if (!action || !viewId || !userId) {
     return; // TODO: Add error handling
   }
-
-  const db = getDb(env.DATABASE_URL);
-  const hoi = await db.query.ratings.findFirst();
-  console.log("hoi", hoi);
-
-  // console.log("storedRatingEntry");
 
   const { user } = await client.users.info({
     user: action.selected_option.value,
