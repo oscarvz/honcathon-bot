@@ -1,15 +1,18 @@
 import type { BlockActionAckHandler, StaticSelectAction } from "slack-edge";
 
+import { getDb } from "@/db";
+import type { EnvVars } from "@/types";
 import {
   ACTION_ID_RATE_USER,
   ACTION_ID_SELECT_USER,
   VIEW_CALLBACK_ID,
 } from "../constants";
 
-export const usersSelectActionHandler: BlockActionAckHandler<
-  "static_select"
-> = async ({
+type Handler = BlockActionAckHandler<"static_select", EnvVars>;
+
+export const usersSelectActionHandler: Handler = async ({
   context: { client, userId },
+  env,
   payload: { actions, container },
 }) => {
   const viewId = container.view_id;
@@ -18,44 +21,21 @@ export const usersSelectActionHandler: BlockActionAckHandler<
       action.type === "static_select" &&
       action.action_id === ACTION_ID_SELECT_USER,
   );
-  if (!action || !viewId) {
+  if (!action || !viewId || !userId) {
     return; // TODO: Add error handling
   }
+
+  const db = getDb(env.DATABASE_URL);
+  const hoi = await db.query.ratings.findFirst();
+  console.log("hoi", hoi);
+
+  // console.log("storedRatingEntry");
 
   const { user } = await client.users.info({
     user: action.selected_option.value,
   });
   if (!user) {
     return; // TODO: Add error handling
-  }
-
-  if (userId === action.selected_option.value) {
-    await client.views.update({
-      view_id: viewId,
-      view: {
-        callback_id: VIEW_CALLBACK_ID,
-        type: "modal",
-        title: { type: "plain_text", text: "HONCATHON point system" },
-        blocks: [
-          {
-            type: "section",
-            text: {
-              type: "mrkdwn",
-              text: "You cannot rate yourself! Please select another user.",
-            },
-            accessory: {
-              type: "users_select",
-              placeholder: {
-                type: "plain_text",
-                text: "Select an item",
-              },
-              action_id: ACTION_ID_SELECT_USER,
-              focus_on_load: true,
-            },
-          },
-        ],
-      },
-    });
   }
 
   await client.views.update({
