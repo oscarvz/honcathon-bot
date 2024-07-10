@@ -13,9 +13,9 @@ export const slashCommandHandler: SlashCommandAckHandler = async ({
   // We're not here to rate bots or the current user, so we filter them out
   const options = members.reduce<Array<PlainTextOption>>(
     (accumulator, { id, real_name, is_bot }) => {
-      const isValidUser = !is_bot && id && real_name;
       const isCurrentUser = id === userId;
       const isSlackBot = id === "USLACKBOT";
+      const isValidUser = !is_bot && id && real_name;
 
       if (isValidUser && !isCurrentUser && !isSlackBot) {
         return accumulator.concat({
@@ -43,7 +43,7 @@ export const slashCommandHandler: SlashCommandAckHandler = async ({
           type: "section",
           text: {
             type: "mrkdwn",
-            text: "Pick a colleague from from the dropdown list",
+            text: "Pick a colleague...",
           },
           accessory: {
             type: "static_select",
