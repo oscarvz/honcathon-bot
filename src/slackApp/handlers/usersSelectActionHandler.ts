@@ -1,4 +1,4 @@
-import type { BlockActionAckHandler, UsersSelectAction } from "slack-edge";
+import type { BlockActionAckHandler, StaticSelectAction } from "slack-edge";
 
 import {
   ACTION_ID_RATE_USER,
@@ -6,31 +6,30 @@ import {
   VIEW_CALLBACK_ID,
 } from "../constants";
 
-export const actionHandler: BlockActionAckHandler<"users_select"> = async ({
+export const usersSelectActionHandler: BlockActionAckHandler<
+  "static_select"
+> = async ({
   context: { client, userId },
   payload: { actions, container },
 }) => {
   const viewId = container.view_id;
   const action = actions.find(
-    (action): action is UsersSelectAction =>
-      action.type === "users_select" &&
+    (action): action is StaticSelectAction =>
+      action.type === "static_select" &&
       action.action_id === ACTION_ID_SELECT_USER,
   );
-
   if (!action || !viewId) {
-    return;
+    return; // TODO: Add error handling
   }
 
   const { user } = await client.users.info({
-    user: action.selected_user,
+    user: action.selected_option.value,
   });
-
-  // TODO: Add error handling
   if (!user) {
-    return;
+    return; // TODO: Add error handling
   }
 
-  if (userId === action.selected_user) {
+  if (userId === action.selected_option.value) {
     await client.views.update({
       view_id: viewId,
       view: {
