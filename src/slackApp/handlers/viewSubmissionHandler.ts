@@ -1,7 +1,7 @@
 import type { ViewSubmissionAckHandler } from "slack-edge";
 
 import { getDb } from "@/db";
-import { scoresTable, usersTable } from "@/schema";
+import { ratings, users } from "@/schema";
 import type { EnvVars } from "@/types";
 import { ACTION_ID_RATE_USER } from "../constants";
 
@@ -25,15 +25,15 @@ export const viewSubmissionHandler: ViewSubmissionAckHandler<EnvVars> = async ({
 
   // Add the user that's being rated to the database
   await db
-    .insert(usersTable)
+    .insert(users)
     .values({
       id: targetUserId,
       name: targetSlackUser.user.real_name,
     })
-    .onConflictDoNothing({ target: usersTable.id });
+    .onConflictDoNothing({ target: users.id });
 
   // Then we can add the rating to the database
-  await db.insert(scoresTable).values({
+  await db.insert(ratings).values({
     userId: targetUserId,
     ratedById: user.id,
     score: Number.parseInt(rating, 10),

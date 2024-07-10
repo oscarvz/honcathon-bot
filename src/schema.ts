@@ -1,15 +1,16 @@
+import { relations } from "drizzle-orm";
 import { integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 
-export const usersTable = pgTable("users_table", {
+export const users = pgTable("users_table", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
 });
 
-export const scoresTable = pgTable("scores_table", {
+export const ratings = pgTable("ratings_table", {
   id: serial("id").primaryKey(),
   userId: text("user_id")
     .notNull()
-    .references(() => usersTable.id, { onDelete: "cascade" }),
+    .references(() => users.id, { onDelete: "cascade" }),
   ratedById: text("rated_by_id").notNull(),
   score: integer("score").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -18,8 +19,10 @@ export const scoresTable = pgTable("scores_table", {
     .$onUpdate(() => new Date()),
 });
 
-export type InsertUser = typeof usersTable.$inferInsert;
-export type SelectUser = typeof usersTable.$inferSelect;
+export const usersRelations = relations(users, ({ many }) => ({
+  ratings: many(ratings),
+}));
 
-export type InsertScore = typeof scoresTable.$inferInsert;
-export type SelectScore = typeof scoresTable.$inferSelect;
+export const ratingsRelations = relations(ratings, ({ one }) => ({
+  receiver: one(users, { fields: [ratings.userId], references: [users.id] }),
+}));

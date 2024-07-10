@@ -3,7 +3,6 @@ import { Hono } from "hono";
 import { showRoutes } from "hono/dev";
 
 import { getDb } from "@/db";
-import { usersTable } from "@/schema";
 import { getSlackApp } from "@/slackApp";
 import type { EnvVars } from "@/types";
 
@@ -24,14 +23,22 @@ app.use("/slack*", async (c, next) => {
 
 app.get("/", async (c) => {
   const db = getDb(c.env.DATABASE_URL);
-  const users = await db.select().from(usersTable);
+  const users = await db.query.users.findMany({ with: { ratings: true } });
 
   return c.html(
     <div>
       <h1>Hello Honc!</h1>
 
-      {users.map((user) => (
-        <div key={user.id}>{user.name}</div>
+      {users.map(({ id, name, ratings }) => (
+        <div key={id}>
+          {name}
+
+          {ratings.map((rating) => (
+            <div key={rating.id}>
+              {rating.score} by {rating.ratedById}
+            </div>
+          ))}
+        </div>
       ))}
     </div>,
   );
