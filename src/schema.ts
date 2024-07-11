@@ -24,5 +24,8 @@ export const usersRelations = relations(users, ({ many }) => ({
 }));
 
 export const ratingsRelations = relations(ratings, ({ one }) => ({
-  receiver: one(users, { fields: [ratings.userId], references: [users.id] }),
+  receiver: one(users, {
+    fields: [ratings.userId],
+    references: [users.id],
+  }),
 }));

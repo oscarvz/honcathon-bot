@@ -1,5 +1,6 @@
 import type { BlockActionAckHandler, StaticSelectAction } from "slack-edge";
 
+import { getDb } from "@/db";
 import type { EnvVars } from "@/types";
 import {
   ACTION_ID_RATE_USER,
@@ -11,6 +12,7 @@ type Handler = BlockActionAckHandler<"static_select", EnvVars>;
 
 export const usersSelectActionHandler: Handler = async ({
   context: { client, userId },
+  env,
   payload: { actions, container },
 }) => {
   const viewId = container.view_id;
@@ -19,16 +21,20 @@ export const usersSelectActionHandler: Handler = async ({
       action.type === "static_select" &&
       action.action_id === ACTION_ID_SELECT_USER,
   );
-  if (!action || !viewId || !userId) {
+  const userResponse =
+    action && (await client.users.info({ user: action.selected_option.value }));
+  if (!(action && viewId && userId && userResponse?.user)) {
     return; // TODO: Add error handling
   }
 
-  const { user } = await client.users.info({
-    user: action.selected_option.value,
+  const db = getDb(env.DATABASE_URL);
+  const ratingByCurrentUser = await db.query.ratings.findFirst({
+    where: (users, { and, eq }) =>
+      and(
+        eq(users.ratedById, userId),
+        eq(users.userId, action.selected_option.value),
+      ),
   });
-  if (!user) {
-    return; // TODO: Add error handling
-  }
 
   await client.views.update({
     view_id: viewId,
@@ -41,15 +47,17 @@ export const usersSelectActionHandler: Handler = async ({
           type: "header",
           text: {
             type: "plain_text",
-            text: `Rate the demo of ${user.real_name}!`,
+            text: `${
+              ratingByCurrentUser ? "Update score for" : "Rate the demo of"
+            } ${userResponse.user.real_name}!`,
           },
         },
         {
-          block_id: user.id,
+          block_id: userResponse.user.id,
           type: "input",
           label: {
             type: "plain_text",
-            text: "Please rate between 0 and 10",
+            text: "Range between 0 and 10",
           },
           element: {
             type: "number_input",
@@ -57,6 +65,7 @@ export const usersSelectActionHandler: Handler = async ({
             action_id: ACTION_ID_RATE_USER,
             max_value: "10",
             focus_on_load: true,
+            initial_value: ratingByCurrentUser?.score.toString(),
           },
         },
       ],
