@@ -12,12 +12,8 @@ export const viewSubmissionHandler: ViewSubmissionAckHandler<EnvVars> = async ({
 }) => {
   const [[targetUserId, action]] = Object.entries(view.state.values);
   const rating = action[ACTION_ID_RATE_USER].value;
-  if (!rating) {
-    return; // TODO: Add error handling
-  }
-
   const targetSlackUser = await client.users.info({ user: targetUserId });
-  if (!targetSlackUser.user?.real_name) {
+  if (!(rating && targetSlackUser.user?.real_name)) {
     return; // TODO: Add error handling
   }
 
@@ -32,10 +28,19 @@ export const viewSubmissionHandler: ViewSubmissionAckHandler<EnvVars> = async ({
     })
     .onConflictDoNothing({ target: users.id });
 
-  // Then we can add the rating to the database
-  await db.insert(ratings).values({
-    userId: targetUserId,
-    ratedById: user.id,
-    score: Number.parseInt(rating, 10),
-  });
+  const score = Number.parseInt(rating, 10);
+
+  // Then we can add the rating to the database, or update the score in case it
+  // already exists
+  await db
+    .insert(ratings)
+    .values({
+      userId: targetUserId,
+      ratedById: user.id,
+      score,
+    })
+    .onConflictDoUpdate({
+      target: ratings.ratedById,
+      set: { score },
+    });
 };
