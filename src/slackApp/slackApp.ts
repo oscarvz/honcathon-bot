@@ -11,7 +11,7 @@ import {
 export function getSlackApp(env: EnvVars) {
   const slackApp = new SlackApp({ env });
 
-  slackApp.command("/nagbot", slashCommandHandler);
+  slackApp.command("/honcathonbot", slashCommandHandler);
   slackApp.action(ACTION_ID_SELECT_USER, usersSelectActionHandler);
   slackApp.viewSubmission(VIEW_CALLBACK_ID, viewSubmissionHandler);
 
