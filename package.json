@@ -9,18 +9,18 @@
     "type-check": "tsc"
   },
   "dependencies": {
-    "@fiberplane/hono": "beta",
     "@neondatabase/serverless": "^0.9.4",
-    "dotenv": "^16.4.5",
-    "drizzle-orm": "^0.31.2",
-    "hono": "^4.4.11",
-    "slack-edge": "^0.13.3"
+    "drizzle-orm": "^0.31.4",
+    "hono": "^4.4.13",
+    "slack-edge": "^0.13.4"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.8.3",
-    "@cloudflare/workers-types": "^4.20240529.0",
+    "@cloudflare/workers-types": "^4.20240701.0",
+    "@fiberplane/hono": "^0.2.0",
+    "dotenv": "^16.4.5",
     "drizzle-kit": "^0.22.8",
     "typescript": "^5.5.3",
-    "wrangler": "^3.57.2"
+    "wrangler": "^3.64.0"
   }
 }
